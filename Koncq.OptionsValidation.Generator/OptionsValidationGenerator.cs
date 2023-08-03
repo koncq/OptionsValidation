@@ -15,30 +15,28 @@ public class OptionsValidationGenerator : IIncrementalGenerator
         context.RegisterPostInitializationOutput(ctx =>
             ctx.AddSource(
                 $"ValidateOptionsAttribute.g.cs",
-                SourceText.From(SourceGenerationHelper.Attribute(), Encoding.UTF8)));
+                SourceText.From(SourceGenerationHelper.GenerateAttribute(), Encoding.UTF8)));
 
         // Do a simple filter for enums
         IncrementalValuesProvider<ClassDeclarationSyntax> classDeclarations = context.SyntaxProvider
             .CreateSyntaxProvider(
-                predicate: static (s, _) => IsSyntaxTargetForGeneration(s), // select enums with attributes
-                transform: static (ctx, _) => GetSemanticTargetForGeneration(ctx)) // sect the enum with the [EnumExtensions] attribute
-            .Where(static m => m is not null)!; // filter out attributed enums that we don't care about
+                predicate: static (s, _) => IsSyntaxTargetForGeneration(s), // select classes with attributes
+                transform: static (ctx, _) => GetSemanticTargetForGeneration(ctx)) // sect the class with the [ValidateOptions] attribute
+            .Where(static m => m is not null)!; // filter out attributed class that we don't care about
 
-        // Combine the selected enums with the `Compilation`
+        // Combine the selected classes with the `Compilation`
         IncrementalValueProvider<(Compilation, ImmutableArray<ClassDeclarationSyntax>)> compilationAndClasses
             = context.CompilationProvider.Combine(classDeclarations.Collect());
 
-        // Generate the source using the compilation and enums
+        // Generate the source using the compilation and classes
         context.RegisterSourceOutput(compilationAndClasses, static (spc, source) => Execute(source.Item1, source.Item2, spc));
-
-        // throw new NotImplementedException();
     }
 
     private static bool IsSyntaxTargetForGeneration(SyntaxNode node) => node is ClassDeclarationSyntax { AttributeLists.Count: > 0 };
 
     private static ClassDeclarationSyntax? GetSemanticTargetForGeneration(GeneratorSyntaxContext context)
     {
-        // we know the node is a EnumDeclarationSyntax thanks to IsSyntaxTargetForGeneration
+        // we know the node is a ClassDeclarationSyntax thanks to IsSyntaxTargetForGeneration
         var classDeclarationSyntax = (ClassDeclarationSyntax)context.Node;
 
         // loop through all the attributes on the method
@@ -48,7 +46,6 @@ public class OptionsValidationGenerator : IIncrementalGenerator
             {
                 if (context.SemanticModel.GetSymbolInfo(attributeSyntax).Symbol is not IMethodSymbol attributeSymbol)
                 {
-                    // weird, we couldn't get the symbol, ignore it
                     continue;
                 }
 
