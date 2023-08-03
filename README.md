@@ -1,6 +1,9 @@
 # Koncq.OptionsValidation
 
 Simple generator to register and validate with data annotations the options in .NET projects.
+
+## Usage
+
 It is enough to use extension method `RegisterOptions` like so:
 
 ```
@@ -45,12 +48,8 @@ namespace Koncq.OptionsValidation
 }
 ```
 
-## Usage
-
 Attribute `ValidateOptions` has following properties:
 
 - SectionName - defines custom `section name` to retrieve configuration section. Default value is options class name  
 - SkipStartupValidation - disables options validation during startup and can lead to exceptions during runtime when value of the property guarded by data annotation does not met the criteria (default: false)
-
-## Instalation 
 
