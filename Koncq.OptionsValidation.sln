@@ -1,0 +1,22 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Koncq.OptionsValidation.Generator", ".\Koncq.OptionsValidation.Generator\Koncq.OptionsValidation.Generator.csproj", "{C7CE2BC6-07FD-413C-B0A0-4D6821F04A03}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Koncq.OptionsValidation.Generator.Tests", ".\Koncq.OptionsValidation.Generator.Tests\Koncq.OptionsValidation.Generator.Tests.csproj", "{D18D7124-2D48-4709-A134-8731D6FA59FA}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{C7CE2BC6-07FD-413C-B0A0-4D6821F04A03}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{C7CE2BC6-07FD-413C-B0A0-4D6821F04A03}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{C7CE2BC6-07FD-413C-B0A0-4D6821F04A03}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{C7CE2BC6-07FD-413C-B0A0-4D6821F04A03}.Release|Any CPU.Build.0 = Release|Any CPU
+		{D18D7124-2D48-4709-A134-8731D6FA59FA}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{D18D7124-2D48-4709-A134-8731D6FA59FA}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{D18D7124-2D48-4709-A134-8731D6FA59FA}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{D18D7124-2D48-4709-A134-8731D6FA59FA}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+EndGlobal
