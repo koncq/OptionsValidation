@@ -64,7 +64,7 @@ public class OptionsValidationGenerator : IIncrementalGenerator
         return null;
     }
 
-    static void Execute(Compilation compilation, ImmutableArray<ClassDeclarationSyntax> classes, SourceProductionContext context)
+    private static void Execute(Compilation compilation, ImmutableArray<ClassDeclarationSyntax> classes, SourceProductionContext context)
     {
         if (classes.IsDefaultOrEmpty)
         {
@@ -91,7 +91,7 @@ public class OptionsValidationGenerator : IIncrementalGenerator
 
     private static List<RegistrationToGenerate> GetTypesToGenerate(Compilation compilation, IEnumerable<ClassDeclarationSyntax> classes, CancellationToken cancellationToken)
     {
-        var enumsToGenerate = new List<RegistrationToGenerate>();
+        var classesToGenerate = new List<RegistrationToGenerate>();
 
         // Get the semantic representation of our marker attribute 
         var classAttribute = compilation.GetTypeByMetadataName("Koncq.OptionsValidation.Generator.ValidateOptionsAttribute");
@@ -99,66 +99,88 @@ public class OptionsValidationGenerator : IIncrementalGenerator
         {
             // If this is null, the compilation couldn't find the marker attribute type
             // which suggests there's something very wrong! Bail out..
-            return enumsToGenerate;
+            return classesToGenerate;
         }
 
+        // ReSharper disable once LoopCanBeConvertedToQuery
         foreach (var classDeclarationSyntax in classes)
         {
-            // initial values for attribute arguments
-            string? sectionName = null;
-            var skipStartupValidation = false;
-
-            // stop if we're asked to
-            cancellationToken.ThrowIfCancellationRequested();
-
-            // Get the semantic representation of the enum syntax
-            var semanticModel = compilation.GetSemanticModel(classDeclarationSyntax.SyntaxTree);
-            if (semanticModel.GetDeclaredSymbol(classDeclarationSyntax) is not INamedTypeSymbol classSymbol)
+            var registrationToGenerate = GetClassToGenerate(compilation, classDeclarationSyntax, classAttribute, cancellationToken);
+            if (registrationToGenerate is not null)
             {
-                // something went wrong, bail out
-                continue;
+                classesToGenerate.Add(registrationToGenerate);
             }
-
-            foreach (var attributeData in classSymbol.GetAttributes())
-            {
-                if (!classAttribute.Equals(attributeData.AttributeClass, SymbolEqualityComparer.Default))
-                {
-                    continue;
-                }
-
-                // This is the attribute, check all of the named arguments
-                foreach (var namedArgument in attributeData.NamedArguments)
-                {
-                    // Is this the SectionName argument?
-                    if (namedArgument is { Key: "SectionName", Value.Value: not null })
-                    {
-                        sectionName = namedArgument.Value.Value.ToString();
-                    }
-
-                    // Is this the SectionName argument?
-                    if (namedArgument is { Key: "SkipStartupValidation", Value.Value: not null })
-                    {
-                        skipStartupValidation = (bool)namedArgument.Value.Value;
-                    }
-                }
-
-                break;
-            }
-
-
-            // Get the full type name of the enum e.g. Colour, 
-            // or OuterClass<T>.Colour if it was nested in a generic type (for example)
-            var className = classSymbol.ToString();
-
-            // Create an EnumToGenerate for use in the generation phase
-            enumsToGenerate.Add(new RegistrationToGenerate
-            {
-                Name = className,
-                SectionName = sectionName,
-                SkipStartupValidation = skipStartupValidation
-            });
         }
 
-        return enumsToGenerate;
+        return classesToGenerate;
+    }
+
+    private static RegistrationToGenerate? GetClassToGenerate(Compilation compilation, SyntaxNode node, ISymbol classAttribute, CancellationToken cancellationToken)
+    {
+        // initial values for attribute arguments
+        string? sectionName = null;
+        var skipStartupValidation = false;
+
+        // stop if we're asked to
+        cancellationToken.ThrowIfCancellationRequested();
+
+        // Get the semantic representation of the enum syntax
+        var semanticModel = compilation.GetSemanticModel(node.SyntaxTree);
+        if (semanticModel.GetDeclaredSymbol(node) is not INamedTypeSymbol classSymbol)
+        {
+            // something went wrong, bail out
+            return null;
+        }
+
+        var attributesData = classSymbol
+            .GetAttributes()
+            .Where(attributeData => classAttribute.Equals(attributeData.AttributeClass, SymbolEqualityComparer.Default));
+            
+        foreach (var attributeData in attributesData)
+        {
+            // This is the attribute, check all of the named arguments
+            foreach (var namedArgument in attributeData.NamedArguments)
+            {
+                sectionName = GetSectionName(namedArgument, sectionName);
+                skipStartupValidation = GetSkipStartupValidation(namedArgument, skipStartupValidation);
+            }
+
+            break;
+        }
+
+
+        // Get the full type name of the enum e.g. Colour, 
+        // or OuterClass<T>.Colour if it was nested in a generic type (for example)
+        var className = classSymbol.ToString();
+
+        // Create an EnumToGenerate for use in the generation phase
+        return new RegistrationToGenerate
+        {
+            Name = className,
+            SectionName = sectionName,
+            SkipStartupValidation = skipStartupValidation
+        };
+    }
+
+    private static bool GetSkipStartupValidation(KeyValuePair<string, TypedConstant> namedArgument, bool skipStartupValidation)
+    {
+        // Is this the SectionName argument?
+        if (namedArgument is { Key: "SkipStartupValidation", Value.Value: not null })
+        {
+            skipStartupValidation = (bool)namedArgument.Value.Value;
+        }
+
+        return skipStartupValidation;
+    }
+
+    private static string? GetSectionName(KeyValuePair<string, TypedConstant> namedArgument, string? sectionName)
+    {
+        // Is this the SectionName argument?
+        if (namedArgument is { Key: "SectionName", Value.Value: not null })
+        {
+            sectionName = namedArgument.Value.Value.ToString();
+        }
+
+        return sectionName;
     }
 }
