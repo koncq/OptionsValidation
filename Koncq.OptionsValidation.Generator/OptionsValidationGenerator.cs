@@ -53,7 +53,7 @@ public class OptionsValidationGenerator : IIncrementalGenerator
                 var fullName = attributeContainingTypeSymbol.ToDisplayString();
 
                 // Is the attribute the [ValidateOptionsAttribute] attribute?
-                if (fullName == "Koncq.OptionsValidation.Generator.ValidateOptionsAttribute")
+                if (fullName == "Koncq.OptionsValidation.ValidateOptionsAttribute")
                 {
                     return classDeclarationSyntax;
                 }
@@ -94,7 +94,7 @@ public class OptionsValidationGenerator : IIncrementalGenerator
         var classesToGenerate = new List<RegistrationToGenerate>();
 
         // Get the semantic representation of our marker attribute 
-        var classAttribute = compilation.GetTypeByMetadataName("Koncq.OptionsValidation.Generator.ValidateOptionsAttribute");
+        var classAttribute = compilation.GetTypeByMetadataName("Koncq.OptionsValidation.ValidateOptionsAttribute");
         if (classAttribute == null)
         {
             // If this is null, the compilation couldn't find the marker attribute type

@@ -5,7 +5,7 @@
 // </auto-generated>
 #nullable enable
 
-namespace Koncq.OptionsValidation.Generator
+namespace Koncq.OptionsValidation
 {
     [System.AttributeUsage(System.AttributeTargets.Class)]
     public class ValidateOptionsAttribute : System.Attribute

@@ -17,7 +17,7 @@ public static class SourceGenerationHelper
         @"
 #nullable enable
 
-namespace Koncq.OptionsValidation.Generator
+namespace Koncq.OptionsValidation
 {
     [System.AttributeUsage(System.AttributeTargets.Class)]
     public class ValidateOptionsAttribute : System.Attribute
@@ -40,7 +40,7 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 
-namespace Koncq.OptionsValidation 
+namespace Koncq.OptionsValidation
 {
     public static partial class OptionsValidationExtension
     {

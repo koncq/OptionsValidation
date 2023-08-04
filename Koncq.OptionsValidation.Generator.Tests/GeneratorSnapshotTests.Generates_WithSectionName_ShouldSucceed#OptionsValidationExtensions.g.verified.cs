@@ -7,7 +7,7 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 
-namespace Koncq.OptionsValidation 
+namespace Koncq.OptionsValidation
 {
     public static partial class OptionsValidationExtension
     {

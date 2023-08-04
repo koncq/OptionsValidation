@@ -8,7 +8,7 @@ public class GeneratorSnapshotTests
     {
         // The source code to test
         var source = @"
-using Koncq.OptionsValidation.Generator;
+using Koncq.OptionsValidation;
 
 [ValidateOptions]
 public class Example
@@ -24,7 +24,7 @@ public class Example
     {
         // The source code to test
         var source = @"
-using Koncq.OptionsValidation.Generator;
+using Koncq.OptionsValidation;
 
 [ValidateOptions(SectionName = ""Database"")]
 public class Example
@@ -40,7 +40,7 @@ public class Example
     {
         // The source code to test
         var source = @"
-using Koncq.OptionsValidation.Generator;
+using Koncq.OptionsValidation;
 
 [ValidateOptions(SkipStartupValidation = true)]
 public class Example
